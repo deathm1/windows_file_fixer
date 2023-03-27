@@ -38,17 +38,6 @@ class system_logger():
     @classmethod
     def get_logging_module(self):
         return logging
-    
-
-    @classmethod
-    def my_file_handler(self):
-        fmt = '%(asctime)s | %(levelname)8s | %(filename)s:%(lineno)d | %(message)s'
-        formatter = logging.Formatter(fmt)
-        self.file_handler = logging.FileHandler(self.my_file_name)
-        self.file_handler.setFormatter(formatter)
-        self.addHandler(self.file_handler)
-        
-
     @classmethod
     def create_log(self, my_log_message, log_level):
         log_format = '[%(asctime)s][%(levelname)s][%(filename)s][%(lineno)d]: %(message)s'
@@ -57,9 +46,16 @@ class system_logger():
             handler = logging.StreamHandler(sys.stdout)                                        
             log.addHandler(handler)
             logging.basicConfig(level=log_level, format=log_format)
-
-
         if(self.file_logging_enabled):
+            logging.basicConfig(
+                filename=self.my_file_name, 
+                level=logging.DEBUG, 
+                format=log_format, 
+                filemode="a"
+            )
+        if(self.file_logging_enabled  == True and self.file_logging_enabled==True):
+            handler = logging.StreamHandler(sys.stdout)                                        
+            log.addHandler(handler)
             logging.basicConfig(
                 filename=self.my_file_name, 
                 level=logging.DEBUG, 
