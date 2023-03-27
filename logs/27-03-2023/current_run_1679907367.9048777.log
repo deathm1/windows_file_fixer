@@ -1,8 +1,0 @@
-[2023-03-27 14:26:07,904][INFO][system_logger.py][72]: [main] Launching file fixer...
-[2023-03-27 14:26:07,904][INFO][system_logger.py][72]: [fetch_files] File fetcher has been launched...
-[2023-03-27 14:26:07,904][INFO][system_logger.py][72]: [fetch_files] Directory Processed : dir_1
-[2023-03-27 14:26:07,904][INFO][system_logger.py][72]: [fetch_files] Directory name changed from [dir_1] to [dir_1]
-[2023-03-27 14:26:07,904][INFO][system_logger.py][72]: [fetch_files] File Processed : sdafasdfasdfasdf_345345345345.txt
-[2023-03-27 14:26:07,904][INFO][system_logger.py][72]: [fetch_files] File name changed from [sdafasdfasdfasdf_345345345345.txt] to [sdafasdfasdfasdf_345345345345.txt]
-[2023-03-27 14:26:07,904][INFO][system_logger.py][72]: [fetch_files] File Processed : asdasdsdfsdf_2234_asdad.txt
-[2023-03-27 14:26:07,904][INFO][system_logger.py][72]: [fetch_files] File name changed from [asdasdsdfsdf_2234_asdad.txt] to [asdasdsdfsdf_2234_asdad.txt]
