@@ -1,0 +1,5 @@
+pyi-makespec --onefile --windowed --name windows_file_fixer main.py
+
+
+import shutil
+shutil.copyfile('config.ini', '{0}/config.ini'.format(DISTPATH))

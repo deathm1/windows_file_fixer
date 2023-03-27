@@ -17,8 +17,7 @@ class fetch_and_fix_files():
         mods1 = re.sub("[^a-zA-Z0-9 ]"," ",input_string)
         mods1 = " ".join(mods1.split()).strip()
         pattern = re.compile("^[a-zA-Z]+$")
-        if pattern.match(mods1):
-            mods1 = mods1.lower()
+
         my_split = mods1.split()
         # find numbers 
         collect_string = []
@@ -31,6 +30,12 @@ class fetch_and_fix_files():
                     single_split = single_split[:len(single_split)-1]
                 if(single_split[0] == "_"):
                     single_split = single_split[1:len(single_split)]
+
+            try:
+                single_split = str(single_split).lower()
+            except Exception as e:
+                pass
+            
             collect_string.append(single_split)
         return "_".join(collect_string)
     @classmethod
