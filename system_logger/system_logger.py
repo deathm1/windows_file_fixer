@@ -3,7 +3,6 @@ import sys
 import time
 import logging
 import configparser
-from datetime import datetime
 class system_logger():
     @classmethod
     def __init__(self, config : configparser.ConfigParser()) -> None:
@@ -42,20 +41,11 @@ class system_logger():
     def create_log(self, my_log_message, log_level):
         log_format = '[%(asctime)s][%(levelname)s][%(filename)s][%(lineno)d]: %(message)s'
         log = logging.getLogger(__name__) 
-        if(self.console_logging_enabled == True and self.file_logging_enabled==False):                                                    
+        if(self.console_logging_enabled == True and self.file_logging_enabled==False):                                                  
             handler = logging.StreamHandler(sys.stdout)                                        
             log.addHandler(handler)
             logging.basicConfig(level=log_level, format=log_format)
-        if(self.file_logging_enabled):
-            logging.basicConfig(
-                filename=self.my_file_name, 
-                level=logging.DEBUG, 
-                format=log_format, 
-                filemode="a"
-            )
-        if(self.file_logging_enabled  == True and self.file_logging_enabled==True):
-            handler = logging.StreamHandler(sys.stdout)                                        
-            log.addHandler(handler)
+        else:
             logging.basicConfig(
                 filename=self.my_file_name, 
                 level=logging.DEBUG, 
@@ -72,9 +62,3 @@ class system_logger():
             logging.error(my_log_message)
         elif(log_level == logging.CRITICAL):
             logging.critical(my_log_message)
-        
-            
-
-        
-
-
