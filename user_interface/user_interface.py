@@ -1,12 +1,12 @@
 import os
-import time
 import threading
-from configparser import ConfigParser
-from system_logger.system_logger import system_logger
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter.ttk import *
+from configparser import ConfigParser
+from system_logger.system_logger import system_logger
+from fetch_and_fix_files.fetch_and_fix_files import fetch_and_fix_files
 class user_interface():
     @classmethod
     def __init__(self, config : ConfigParser, my_logger : system_logger) -> None:
@@ -32,7 +32,6 @@ class user_interface():
         except Exception as e:
             self.my_logger.create_log(f"[user_interface] Something went wrong. Error =>{e}", self.my_logger.get_logging_module().ERROR)
 
-
     @classmethod
     def ui_elements(self):
         menu_bar=Menu(self.root)
@@ -41,15 +40,30 @@ class user_interface():
         file_menu.add_command(label="Exit", command=self._quit)   
         help_menu= Menu(menu_bar, tearoff=0)  
         help_menu.add_command(label="About", command=self.help_window) 
-        a = Label(self.root ,text = "Target Directory").grid(row = 0,column = 0, padx=5, pady=5)
-        b = Label(self.root ,text = "Regular Expression").grid(row = 1,column = 0, padx=5, pady=5)
-        c = Label(self.root ,text = "Save Location").grid(row = 2, column = 0, padx=5, pady=5)
-        d = Label(self.root ,text = "Function Order").grid(row = 2, column = 0, padx=5, pady=5)
-        a1 = Entry(self.root).grid(row = 0,column = 1, padx=5, pady=5)
-        b1 = Entry(self.root).grid(row = 1,column = 1, padx=5, pady=5)
-        c1 = Entry(self.root).grid(row = 2,column = 1, padx=5, pady=5)
-        self.run = Button(self.root, text="Run", command=self.traitement)
-        self.run.grid(row = 5, column=1, padx=5, pady=5)
+        self.a = Label(self.root, text = "Target Directory").grid(row = 0,column = 0, padx=5, pady=2)
+        self.b = Label(self.root, text = "Regular Expression").grid(row = 1,column = 0, padx=5, pady=2)
+        self.c = Label(self.root, text = "Save Location").grid(row = 2, column = 0, padx=5, pady=2)
+        self.d = Label(self.root, text = "Save Location Name").grid(row = 3, column = 0, padx=5, pady=2)
+        self.e = Label(self.root, text = "Function Order ( , delimited)").grid(row = 4, column = 0, padx=5, pady=2)
+        self.f = Label(self.root, text = "0 - Convert file and directory names to snake case.\n1 - Take all the files to a target directory as unique files.")
+        self.f.grid(row = 6, column = 0, padx=5, pady=5)
+        self.a1 = Entry(self.root, width=50)
+        self.a1.grid(row = 0, column = 1, padx=5, pady=2)
+        self.b1 = Entry(self.root, width=50)
+        self.b1.grid(row = 1, column = 1, padx=5, pady=2)
+        self.c1 = Entry(self.root, width=50)
+        self.c1.grid(row = 2, column = 1, padx=5, pady=2)
+        self.d1 = Entry(self.root, width=50)
+        self.d1.grid(row = 3, column = 1, padx=5, pady=2)
+        self.e1 = Entry(self.root, width=50)
+        self.e1.grid(row = 4, column = 1, padx=5, pady=2)
+        self.a1.insert(0, self.config.get("FILE_FIXER_CONFIG","TARGET_DIRECTORY"))
+        self.b1.insert(0, self.config.get("FILE_FIXER_CONFIG","REGULAR_EXPRESSION"))
+        self.c1.insert(0, self.config.get("FILE_FIXER_CONFIG","SAVE_LOCATION"))
+        self.d1.insert(0, self.config.get("FILE_FIXER_CONFIG","SAVE_LOCATION_NAME"))
+        self.e1.insert(0, self.config.get("FILE_FIXER_CONFIG","FUNCTIONS"))
+        self.run = Button(self.root, text="Run", command=self.traitement, width=20)
+        self.run.grid(row = 7, column=1, padx=5, pady=2)
         self.progress = Progressbar(self.root, orient = HORIZONTAL,length = 100, mode = 'indeterminate')
         menu_bar.add_cascade(label="Options", menu=file_menu) 
         menu_bar.add_cascade(label="Help", menu=help_menu) 
@@ -57,16 +71,43 @@ class user_interface():
     @classmethod
     def help_window(self):
         messagebox.showinfo(f'[v{self.config.get("SYSTEM","VERSION")}] About', f'''Hi guys, this is a simple app which helps you organize your files. The app has been tested and is working fine. IF YOU MESS UP YOUR FILES, IT IS NOT MY RESPONSIBILITY. Test this app on a prototype/test directory and then use it on your files.\nMade with love, roganjosh, sambar, idli, pani puri and butter chicken in India.''')
-   
+
+    @classmethod
+    def check_if_string_valid(self, input_str : str):
+        if(input_str!=None and input_str!=""):
+            return True
+        return False
+    
     @classmethod
     def run_tasks(self):
-        print("running...")
-        time.sleep(2)
+        TARGET_DIRECTORY = self.a1.get()
+        REGULAR_EXPRESSION = self.b1.get()
+        SAVE_LOCATION = self.c1.get()
+        SAVE_LOCATION_NAME = self.d1.get()
+        FUNCTIONS = self.e1.get()
+        if(self.check_if_string_valid(TARGET_DIRECTORY) and 
+            self.check_if_string_valid(REGULAR_EXPRESSION) and 
+            self.check_if_string_valid(SAVE_LOCATION) and 
+            self.check_if_string_valid(SAVE_LOCATION_NAME) and 
+            self.check_if_string_valid(FUNCTIONS)):
+            fetch_and_fix_files(
+                my_logger=self.my_logger,
+                config=self.config,
+                target_directory=TARGET_DIRECTORY,
+                save_location=SAVE_LOCATION,
+                save_location_name=SAVE_LOCATION_NAME,
+                function_string=[int(str(func).strip()) for func in FUNCTIONS.split(",")]
+            )
+            messagebox.showinfo("Completed", "All tasks completed please check the target directory.\nHave Fun :)")
+            self.my_logger.create_log(f"[user_interface] All tasks completed please check the target directory.", 
+                                      self.my_logger.get_logging_module().INFO)
+        else:
+            messagebox.showerror("Information Mission", "Information is missing, program will not continue.")
 
     @classmethod
     def traitement(self):
         def real_traitement():
-            self.progress.grid(row=5,column=0)
+            self.progress.grid(row=7,column=0)
             self.progress.start()
             self.run["state"] = DISABLED
             self.run_tasks()
@@ -76,7 +117,8 @@ class user_interface():
         threading.Thread(target=real_traitement).start()
 
     @classmethod
-    def _quit(self):  
+    def _quit(self): 
+        self.my_logger.create_log(f"[user_interface] Program has been closed/terminated.", self.my_logger.get_logging_module().INFO)
         self.root.quit()  
         self.root.destroy()  
         exit() 

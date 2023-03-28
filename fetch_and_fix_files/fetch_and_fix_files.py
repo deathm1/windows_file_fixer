@@ -3,7 +3,6 @@ import sys
 import configparser
 import re
 import pathlib
-import time
 import shutil
 import uuid
 from system_logger.system_logger import system_logger
@@ -11,19 +10,22 @@ from system_logger.system_logger import system_logger
 class fetch_and_fix_files():
 
     @classmethod
-    def __init__(self, my_logger : system_logger, config : configparser.ConfigParser()) -> None:
+    def __init__(self, my_logger : system_logger, config : configparser.ConfigParser(),
+                 target_directory : str, save_location : str, save_location_name : str, 
+                 function_string : str) -> None:
         self.my_logger = my_logger
         self.config = config
         self.my_logger.create_log("[fetch_files] File fetcher has been launched...", self.my_logger.get_logging_module().INFO)
-        self.target_directory = self.config.get("FILE_FIXER_CONFIG","TARGET_DIRECTORY")
-        self.save_location = self.config.get("FILE_FIXER_CONFIG","SAVE_LOCATION")
-        self.save_location_name = self.config.get("FILE_FIXER_CONFIG","SAVE_LOCATION_NAME")
-        function_sequence = [int(func) for func in str(self.config.get("FILE_FIXER_CONFIG","FUNCTIONS")).split(",")]
-        # for current_function in function_sequence:
-        #     if(current_function==0):
-        #         self.standardize_files_and_directories()
-        #     if(current_function==1):
-        #         self.extract_files_from()
+        self.target_directory = target_directory
+        self.save_location = save_location
+        self.save_location_name = save_location_name
+        self.function_sequence = function_string
+
+        for current_function in self.function_sequence:
+            if(current_function==0):
+                self.standardize_files_and_directories()
+            if(current_function==1):
+                self.extract_files_from()
 
     @classmethod
     def extract_files_from(self):
