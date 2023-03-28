@@ -19,11 +19,11 @@ class fetch_and_fix_files():
         self.save_location = self.config.get("FILE_FIXER_CONFIG","SAVE_LOCATION")
         self.save_location_name = self.config.get("FILE_FIXER_CONFIG","SAVE_LOCATION_NAME")
         function_sequence = [int(func) for func in str(self.config.get("FILE_FIXER_CONFIG","FUNCTIONS")).split(",")]
-        for current_function in function_sequence:
-            if(current_function==0):
-                self.standardize_files_and_directories()
-            if(current_function==1):
-                self.extract_files_from()
+        # for current_function in function_sequence:
+        #     if(current_function==0):
+        #         self.standardize_files_and_directories()
+        #     if(current_function==1):
+        #         self.extract_files_from()
 
     @classmethod
     def extract_files_from(self):
@@ -52,7 +52,8 @@ class fetch_and_fix_files():
 
     @classmethod
     def name_standardizer(self, input_string):
-        mods1 = re.sub("[^a-zA-Z0-9 ]"," ",input_string)
+        print(self.config.get("FILE_FIXER_CONFIG","REGULAR_EXPRESSION"))
+        mods1 = re.sub(self.config.get("FILE_FIXER_CONFIG","REGULAR_EXPRESSION")," ",input_string)
         mods1 = " ".join(mods1.split()).strip()
         my_split = mods1.split()
         collect_string = []
@@ -68,7 +69,8 @@ class fetch_and_fix_files():
             try:
                 single_split = str(single_split).lower()
             except Exception as e:
-                pass
+                self.my_logger.create_log(f"[fetch_files] Only numbers are there in this string, hence not lower cased. Error => {e}", 
+                                          self.my_logger.get_logging_module().ERROR)
             
             collect_string.append(single_split)
         return "_".join(collect_string)
@@ -81,23 +83,17 @@ class fetch_and_fix_files():
                     self.my_logger.create_log(f"[fetch_files] Directory Processed : {dir}", self.my_logger.get_logging_module().INFO)
                     new_directory_name = self.name_standardizer(dir)
                     os.rename(os.path.join(root, dir), os.path.join(root, new_directory_name))
-                    self.my_logger.create_log(
-                        f"[fetch_files] Directory name changed from [{dir}] to [{new_directory_name}]", 
-                        self.my_logger.get_logging_module().DEBUG
-                        )
+                    self.my_logger.create_log(f"[fetch_files] Directory name changed from [{dir}] to [{new_directory_name}]", 
+                        self.my_logger.get_logging_module().DEBUG)
                 for file in files:
                     self.my_logger.create_log(f"[fetch_files] File Processed : {file}", self.my_logger.get_logging_module().INFO)
                     initial_abs_path = os.path.join(root, file)
                     my_pathlib = pathlib.Path(initial_abs_path)
                     new_file_name = f"{self.name_standardizer(my_pathlib.stem)}{my_pathlib.suffix}"
                     os.rename(initial_abs_path, os.path.join(root, new_file_name))
-                    self.my_logger.create_log(
-                        f"[fetch_files] File name changed from [{file}] to [{new_file_name}]", 
-                        self.my_logger.get_logging_module().DEBUG
-                        )
+                    self.my_logger.create_log(f"[fetch_files] File name changed from [{file}] to [{new_file_name}]", 
+                        self.my_logger.get_logging_module().DEBUG)
         except Exception as e:
-            self.my_logger.create_log(
-                f"[fetch_files] Something went wrong while processing files. Error => {e}", 
-                self.my_logger.get_logging_module().ERROR
-            )
+            self.my_logger.create_log(f"[fetch_files] Something went wrong while processing files. Error => {e}", 
+                self.my_logger.get_logging_module().ERROR)
             sys.exit(0)
