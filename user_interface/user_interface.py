@@ -23,7 +23,7 @@ class user_interface():
             x = (ws/2) - (w/2)
             y = (hs/2) - (h/2)
             self.root.geometry('%dx%d+%d+%d' % (w, h, x, y))
-            self.root.iconbitmap(os.path.join(os.getcwd(), self.config.get("USER_INTERFACE","ICON")))
+            # self.root.iconbitmap(os.path.join(os.getcwd(), self.config.get("USER_INTERFACE","ICON")))
             self.my_logger.create_log("[user_interface] Launching Interface elements.", self.my_logger.get_logging_module().INFO)
             self.root.title(str(self.config.get("USER_INTERFACE","WINDOW_TITLE")))
             self.ui_elements()
